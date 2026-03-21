@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eugene Chaban — 90 Day Plan</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0a0a0a; color: #f5f3ee; min-height: 100vh; }
+
+.header { padding: 32px 40px 24px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+.header-top { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
+.logo { font-size: 11px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: #E8593C; }
+.title { font-size: 28px; font-weight: 700; margin-top: 8px; }
+.subtitle { font-size: 14px; color: #888; margin-top: 4px; }
+
+.progress-bar-outer { height: 4px; background: rgba(255,255,255,0.08); border-radius: 2px; margin-top: 20px; }
+.progress-bar-fill { height: 100%; background: linear-gradient(90deg, #E8593C, #F5C842); border-radius: 2px; transition: width .5s; }
+
+.stats-row { display: flex; gap: 24px; margin-top: 16px; flex-wrap: wrap; }
+.stat { }
+.stat-num { font-size: 24px; font-weight: 700; color: #E8593C; }
+.stat-label { font-size: 11px; color: #666; text-transform: uppercase; letter-spacing: .06em; }
+
+.main { max-width: 900px; margin: 0 auto; padding: 32px 40px; }
+
+.section { margin-bottom: 40px; }
+.section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+.section-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+.section-title { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; }
+.section-count { font-size: 11px; color: #666; margin-left: auto; }
+
+.task-list { display: flex; flex-direction: column; gap: 6px; }
+
+.task {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 16px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all .15s;
+  user-select: none;
+}
+.task:hover { background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.1); }
+.task.done { background: rgba(22,163,74,0.08); border-color: rgba(22,163,74,0.2); }
+.task.done .task-text { color: #888; text-decoration: line-through; }
+
+.checkbox {
+  width: 20px; height: 20px;
+  border-radius: 6px;
+  border: 1.5px solid rgba(255,255,255,0.2);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+  transition: all .15s;
+}
+.task.done .checkbox {
+  background: #16a34a;
+  border-color: #16a34a;
+}
+.checkmark { display: none; color: #fff; font-size: 12px; font-weight: 700; }
+.task.done .checkmark { display: block; }
+
+.task-content { flex: 1; }
+.task-text { font-size: 14px; line-height: 1.5; color: #f5f3ee; }
+.task-meta { font-size: 11px; color: #666; margin-top: 3px; }
+
+.badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; margin-left: 8px; }
+.badge-done { background: rgba(22,163,74,0.15); color: #4ade80; }
+.badge-hot { background: rgba(232,89,60,0.15); color: #E8593C; }
+.badge-week { background: rgba(245,200,66,0.15); color: #F5C842; }
+
+.divider { border: none; border-top: 1px solid rgba(255,255,255,0.06); margin: 32px 0; }
+
+.income-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 32px; }
+.income-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 16px; }
+.income-card-title { font-size: 11px; color: #666; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 8px; }
+.income-amount { font-size: 22px; font-weight: 700; color: #E8593C; }
+.income-sub { font-size: 11px; color: #666; margin-top: 4px; }
+
+.weekly-grid { display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; }
+.week-btn { padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 500; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); background: transparent; color: #888; transition: all .15s; }
+.week-btn.active { background: #E8593C; border-color: #E8593C; color: #fff; }
+.week-btn:hover { border-color: rgba(255,255,255,0.3); color: #f5f3ee; }
+
+.notes-area { width: 100%; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 14px; color: #f5f3ee; font-family: inherit; font-size: 14px; resize: vertical; min-height: 100px; outline: none; }
+.notes-area:focus { border-color: #E8593C; }
+.notes-area::placeholder { color: #444; }
+
+.save-btn { margin-top: 10px; padding: 8px 20px; background: #E8593C; border: none; border-radius: 8px; color: #fff; font-size: 13px; font-weight: 500; cursor: pointer; transition: background .15s; }
+.save-btn:hover { background: #c4432a; }
+
+.toast { position: fixed; bottom: 24px; right: 24px; padding: 10px 18px; border-radius: 8px; font-size: 13px; font-weight: 500; background: #16a34a; color: #fff; z-index: 999; animation: slideIn .2s ease; }
+@keyframes slideIn { from { transform: translateY(10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+@media (max-width: 600px) {
+  .header { padding: 20px; }
+  .main { padding: 20px; }
+  .income-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div style="max-width:900px;margin:0 auto">
+    <div class="header-top">
+      <div>
+        <div class="logo">Eugene Chaban · YouTube Growth Plan</div>
+        <div class="title">90-Day Road to $2,000/mo</div>
+        <div class="subtitle">Старт: 21 марта 2026 · Цель: 21 июня 2026</div>
+      </div>
+      <div class="stats-row">
+        <div class="stat">
+          <div class="stat-num" id="done-count">0</div>
+          <div class="stat-label">Выполнено</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num" id="total-count">0</div>
+          <div class="stat-label">Всего задач</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num" id="pct-count">0%</div>
+          <div class="stat-label">Прогресс</div>
+        </div>
+      </div>
+    </div>
+    <div class="progress-bar-outer">
+      <div class="progress-bar-fill" id="main-progress" style="width:0%"></div>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- Income targets -->
+  <div class="income-grid">
+    <div class="income-card">
+      <div class="income-card-title">Месяц 1 — Апрель</div>
+      <div class="income-amount">$300–600</div>
+      <div class="income-sub">Первые интеграции + продажи</div>
+    </div>
+    <div class="income-card">
+      <div class="income-card-title">Месяц 2 — Май</div>
+      <div class="income-amount">$700–1,200</div>
+      <div class="income-sub">Масштаб продукта + рост CTR</div>
+    </div>
+    <div class="income-card">
+      <div class="income-card-title">Месяц 3 — Июнь</div>
+      <div class="income-amount">$1,500–2,500</div>
+      <div class="income-sub">Система работает сама</div>
+    </div>
+  </div>
+
+  <!-- FOUNDATION - DONE -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(22,163,74,0.15)">✅</div>
+      <div class="section-title" style="color:#4ade80">Фундамент — Сделано</div>
+      <div class="section-count" id="count-done-0"></div>
+    </div>
+    <div class="task-list" id="list-0">
+      <div class="task done" onclick="toggle(this)">
+        <div class="checkbox"><span class="checkmark">✓</span></div>
+        <div class="task-content">
+          <div class="task-text">SEO обновлено на 112 длинных видео <span class="badge badge-done">Готово</span></div>
+          <div class="task-meta">Новые заголовки, описания, теги + CTA ссылка на сайт в каждом видео</div>
+        </div>
+      </div>
+      <div class="task done" onclick="toggle(this)">
+        <div class="checkbox"><span class="checkmark">✓</span></div>
+        <div class="task-content">
+          <div class="task-text">Лендинг для сбора email запущен <span class="badge badge-done">Готово</span></div>
+          <div class="task-meta">eugenecha727-star.github.io/eugenechaban — форма + Formspree</div>
+        </div>
+      </div>
+      <div class="task done" onclick="toggle(this)">
+        <div class="checkbox"><span class="checkmark">✓</span></div>
+        <div class="task-content">
+          <div class="task-text">Telegram уведомления о лидах <span class="badge badge-done">Готово</span></div>
+          <div class="task-meta">@EugeneAbsBot отправляет уведомление при каждой новой подписке</div>
+        </div>
+      </div>
+      <div class="task done" onclick="toggle(this)">
+        <div class="checkbox"><span class="checkmark">✓</span></div>
+        <div class="task-content">
+          <div class="task-text">Медиакит PDF создан <span class="badge badge-done">Готово</span></div>
+          <div class="task-meta">Eugene_Chaban_MediaKit.pdf — статистика, аудитория, пакеты</div>
+        </div>
+      </div>
+      <div class="task done" onclick="toggle(this)">
+        <div class="checkbox"><span class="checkmark">✓</span></div>
+        <div class="task-content">
+          <div class="task-text">81 письмо брендам отправлено через Streak <span class="badge badge-done">Готово</span></div>
+          <div class="task-meta">30 + 51 бренд — фитнес приложения, добавки, одежда, tech</div>
+        </div>
+      </div>
+      <div class="task done" onclick="toggle(this)">
+        <div class="checkbox"><span class="checkmark">✓</span></div>
+        <div class="task-content">
+          <div class="task-text">Growth Tracker с бенчмарками настроен <span class="badge badge-done">Готово</span></div>
+          <div class="task-meta">CTR 1.5%, 4552 подписчика, 98 просмотров/28д — стартовые данные</div>
+        </div>
+      </div>
+      <div class="task done" onclick="toggle(this)">
+        <div class="checkbox"><span class="checkmark">✓</span></div>
+        <div class="task-content">
+          <div class="task-text">SEO Tool на GitHub Pages запущен <span class="badge badge-done">Готово</span></div>
+          <div class="task-meta">eugenecha727-star.github.io/youtube-seo-tool — редактирование видео через API</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- WEEK 1 PRIORITY -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(232,89,60,0.15)">🔥</div>
+      <div class="section-title" style="color:#E8593C">Неделя 1–2 — Критично сейчас</div>
+      <div class="section-count" id="count-done-1"></div>
+    </div>
+    <div class="task-list" id="list-1">
+      <div class="task" onclick="toggle(this)">
+        <div class="checkbox"><span class="checkmark">✓</span></div>
+        <div class="task-content">
+          <div class="task-text">Переделать тумбнейлы топ-5 видео <span class="badge badge-hot">КРИТИЧНО</span></div>
+          <div class="task-meta">CTR сейчас 1.5% — цель 4%+. Используй Remove.bg + Canva. Тёмный фон + крупное лицо + 1 слово</div>
+        </div>
+      </div>
+      <div class="task" onclick="toggle(this)">
+        <div class="checkbox"><span class="checkmark">✓</span></div>
+        <div class="task-content">
+          <div class="task-text">Создать PDF "Free Abs Plan" для рассылки подписчикам</div>
+          <div class="task-meta">3-5 страниц. Упражнения + трекер. Отправляется автоматом через ConvertKit</div>
+        </div>
+      </div>
+      <div class="task" onclick="toggle(this)">
+        <div class="checkbox"><span class="checkmark">✓</span></div>
+        <div class="task-content">
+          <div class="task-text">Подключить ConvertKit к лендингу</div>
+          <div class="task-meta">Бесплатно до 10К подписчиков. Автоматическая отправка PDF при подписке</div>
+        </div>
+      </div>
+      <div class="task" onclick="toggle(this)">
+        <div class="checkbox"><span class="checkmark">✓</span></div>
+        <div class="task-content">
+          <div class="task-text">Добавить субтитры (CC) к топ-10 видео</div>
+          <div class="task-meta">YouTube Studio → Videos → Subtitles → Auto-generate. 97.8% смотрят без субтитров — минус в алгоритме</div>
+        </div>
+      </div>
+      <div class="task" onclick="toggle(this)">
+        <div class="checkbox"><span class="checkmark">✓</span></div>
+        <div class="task-content">
+          <div class="task-text">Записать 5 Шортсов с CTA на лендинг</div>
+          <div class="task-meta">Формула: проблема (3 сек) → решение (10 сек) → CTA "Free plan — link in bio". Твои шортсы уже дают 23К просмотров</div>
+        </div>
+      </div>
+      <div class="task" onclick="toggle(this)">
+        <div class="checkbox"><span class="checkmark">✓</span></div>
+        <div class="task-content">
+          <div class="task-text">Добавить ссылку на лендинг в bio YouTube</div>
+          <div class="task-meta">YouTube Studio → Customization → Basic info → Links</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- MONTH 1 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(245,200,66,0.15)">📅</div>
+      <div class="section-title" style="color:#F5C842">Месяц 1 — Апрель</div>
+      <div class="section-count" id="count-done-2"></div>
+    </div>
+    <div class="task-list" id="list-2">
+      <div class="task" onclick="toggle(this)">
+        <div class="checkbox"><span class="checkmark">✓</span></div>
+        <div class="task-content">
+          <div class="task-text">Создать и запустить PDF продукт "28-Day Ab Challenge" на Gumroad</div>
+          <div class="task-meta">Цена $27. 15-20 страниц. Это главный источник дохода — AdSense даст $30-80, продукт $500-1500</div>
+        </div>
+      </div>
+      <div class="task" onclick="toggle(this)">
+        <div class="checkbox"><span class="checkmark">✓</span></div>
+        <div class="task-content">
+          <div class="task-text">14 Шортсов за месяц (2 в неделю минимум)</div>
+          <div class="task-meta">Каждый шортс = трафик на лендинг. Твои топ шортсы: "5 Min Abs" 23К, "Lose that fat" 23К</div>
+        </div>
+      </div>
+      <div class="task" onclick="toggle(this)">
+        <div class="checkbox"><span class="checkmark">✓</span></div>
+        <div class="task-content">
+          <div class="task-text">Проверить ответы от брендов и закрыть 1-2 сделки</div>
+          <div class="task-meta">Streak покажет кто открыл письмо. Отправь follow-up тем кто открыл но не ответил</div>
+        </div>
+      </div>
+      <div class="task" onclick="toggle(this)">
+        <div class="checkbox"><span class="checkmark">✓</span></div>
+        <div class="task-content">
+          <div class="task-text">A/B тест тумбнейлов через YouTube Studio</div>
+          <div class="task-meta">YouTube Studio → Content → видео → Test & Compare. Меняй 1 элемент за раз</div>
+        </div>
+      </div>
+      <div class="task" onclick="toggle(this)">
+        <div class="checkbox"><span class="checkmark">✓</span></div>
+        <div class="task-content">
+          <div class="task-text">Отправить ещё 50 писем новым брендам</div>
+          <div class="task-meta">Средние бренды $1M-50M оборот отвечают лучше. Ищи на Instagram фитнес бренды с 10K-100K подписчиков</div>
+        </div>
+      </div>
+      <div class="task" onclick="toggle(this)">
+        <div class="checkbox"><span class="checkmark">✓</span></div>
+        <div class="task-content">
+          <div class="task-text">Каждую пятницу — снапшот в Growth Tracker</div>
+          <div class="task-meta">CTR, просмотры, подписчики, часы, доход. Скидывай мне скриншот для анализа</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- MONTH 2 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(79,70,229,0.15)">🚀</div>
+      <div class="section-title" style="color:#818cf8">Месяц 2 — Май</div>
+      <div class="section-count" id="count-done-3"></div>
+    </div>
+    <div class="task-list" id="list-3">
+      <div class="task" onclick="toggle(this)">
+        <div class="checkbox"><span class="checkmark">✓</span></div>
+        <div class="task-content">
+          <div class="task-text">Email воронка: бесплатный план → платный продукт</div>
+          <div class="task-meta">ConvertKit: письмо 1 (бесплатный PDF), письмо 2 через 3 дня (предложение купить $27 план)</div>
+        </div>
+      </div>
+      <div class="task" onclick="toggle(this)">
+        <div class="checkbox"><span class="checkmark">✓</span></div>
+        <div class="task-content">
+          <div class="task-text">Серия видео "7-Day Ab Challenge" Day 1-7</div>
+          <div class="task-meta">Серии удерживают аудиторию. Твоё "Day 1" уже 157 просмотров — продолжи серию</div>
+        </div>
+      </div>
+      <div class="task" onclick="toggle(this)">
+        <div class="checkbox"><span class="checkmark">✓</span></div>
+        <div class="task-content">
+          <div class="task-text">Закрыть 3-5 интеграций по $100-200</div>
+          <div class="task-meta">После первых ответов от брендов — делай follow-up каждые 5 дней</div>
+        </div>
+      </div>
+      <div class="task" onclick="toggle(this)">
+        <div class="checkbox"><span class="checkmark">✓</span></div>
+        <div class="task-content">
+          <div class="task-text">Получить монетизацию YouTube (4000 часов)</div>
+          <div class="task-meta">Сейчас ~3200 часов. Нужно ещё ~800 часов. При росте просмотров — реально за 2 месяца</div>
+        </div>
+      </div>
+      <div class="task" onclick="toggle(this)">
+        <div class="checkbox"><span class="checkmark">✓</span></div>
+        <div class="task-content">
+          <div class="task-text">A/B тест цены продукта ($19 vs $27 vs $47)</div>
+          <div class="task-meta">Попробуй разные цены в разные недели — смотри конверсию</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- MONTH 3 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(16,163,74,0.15)">💰</div>
+      <div class="section-title" style="color:#4ade80">Месяц 3 — Июнь ($2,000)</div>
+      <div class="section-count" id="count-done-4"></div>
+    </div>
+    <div class="task-list" id="list-4">
+      <div class="task" onclick="toggle(this)">
+        <div class="checkbox"><span class="checkmark">✓</span></div>
+        <div class="task-content">
+          <div class="task-text">Bundle продукт: PDF + видео программа ($47-97)</div>
+          <div class="task-meta">Объедини бесплатный план + 28-Day Challenge в один пакет. Upsell существующим подписчикам</div>
+        </div>
+      </div>
+      <div class="task" onclick="toggle(this)">
+        <div class="checkbox"><span class="checkmark">✓</span></div>
+        <div class="task-content">
+          <div class="task-text">5+ интеграций по $100-200 в месяц</div>
+          <div class="task-meta">К этому времени будет 150+ брендов охвачено. Конверсия растёт с каждым месяцем</div>
+        </div>
+      </div>
+      <div class="task" onclick="toggle(this)">
+        <div class="checkbox"><span class="checkmark">✓</span></div>
+        <div class="task-content">
+          <div class="task-text">Online коучинг 1-на-1 ($100-200/сессия)</div>
+          <div class="task-meta">Предложи подписчикам персональный план. Даже 3-5 клиентов = $300-1000 дополнительно</div>
+        </div>
+      </div>
+      <div class="task" onclick="toggle(this)">
+        <div class="checkbox"><span class="checkmark">✓</span></div>
+        <div class="task-content">
+          <div class="task-text">3 Шортса в день — систематизация контента</div>
+          <div class="task-meta">Batch recording: записывай 15-20 шортсов за один день раз в неделю</div>
+        </div>
+      </div>
+      <div class="task" onclick="toggle(this)">
+        <div class="checkbox"><span class="checkmark">✓</span></div>
+        <div class="task-content">
+          <div class="task-text">AdSense монетизация подключена</div>
+          <div class="task-meta">Даст $30-100/мес при текущих просмотрах. Небольшой но пассивный доход</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- WEEKLY SHORTS FORMULA -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(232,89,60,0.15)">📱</div>
+      <div class="section-title" style="color:#E8593C">Формула топового Шортса</div>
+    </div>
+    <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:20px;">
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px;">
+        <div style="background:rgba(232,89,60,0.1);border-radius:8px;padding:14px;text-align:center;">
+          <div style="font-size:24px;margin-bottom:6px;">⚡</div>
+          <div style="font-size:12px;font-weight:600;color:#E8593C;margin-bottom:4px;">СЕКУНДЫ 1-3</div>
+          <div style="font-size:12px;color:#888;">Боль / Hook<br>"Почему у тебя нет пресса"</div>
+        </div>
+        <div style="background:rgba(245,200,66,0.1);border-radius:8px;padding:14px;text-align:center;">
+          <div style="font-size:24px;margin-bottom:6px;">💪</div>
+          <div style="font-size:12px;font-weight:600;color:#F5C842;margin-bottom:4px;">СЕКУНДЫ 4-50</div>
+          <div style="font-size:12px;color:#888;">Контент / Решение<br>Показывай упражнение</div>
+        </div>
+        <div style="background:rgba(22,163,74,0.1);border-radius:8px;padding:14px;text-align:center;">
+          <div style="font-size:24px;margin-bottom:6px;">🎯</div>
+          <div style="font-size:12px;font-weight:600;color:#4ade80;margin-bottom:4px;">СЕКУНДЫ 50-60</div>
+          <div style="font-size:12px;color:#888;">CTA<br>"Free plan — link in bio"</div>
+        </div>
+      </div>
+      <div style="font-size:12px;color:#666;line-height:1.8;">
+        <strong style="color:#f5f3ee;">Топ темы для твоей аудитории (мужчины 25-44):</strong><br>
+        "Почему твой живот не уходит" · "5 ошибок при тренировке пресса" · "Делай это 5 минут каждое утро" · 
+        "Я тренировался 30 дней — вот результат" · "Одно упражнение которое заменит все остальные" · 
+        "Почему ты не видишь пресс несмотря на тренировки"
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- WEEKLY NOTES -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(255,255,255,0.06)">📝</div>
+      <div class="section-title">Еженедельные заметки</div>
+    </div>
+    <div class="weekly-grid" id="week-tabs">
+      <button class="week-btn active" onclick="selectWeek(1)">Неделя 1</button>
+      <button class="week-btn" onclick="selectWeek(2)">Неделя 2</button>
+      <button class="week-btn" onclick="selectWeek(3)">Неделя 3</button>
+      <button class="week-btn" onclick="selectWeek(4)">Неделя 4</button>
+      <button class="week-btn" onclick="selectWeek(5)">Неделя 5</button>
+      <button class="week-btn" onclick="selectWeek(6)">Неделя 6</button>
+    </div>
+    <textarea class="notes-area" id="notes-area" placeholder="Запиши что сделал на этой неделе, какие результаты, что не получилось..."></textarea>
+    <button class="save-btn" onclick="saveNotes()">Сохранить заметки</button>
+  </div>
+
+</div>
+
+<script>
+let currentWeek = 1;
+
+function toggle(el) {
+  el.classList.toggle('done');
+  saveState();
+  updateCounts();
+}
+
+function updateCounts() {
+  const allTasks = document.querySelectorAll('.task');
+  const doneTasks = document.querySelectorAll('.task.done');
+  const total = allTasks.length;
+  const done = doneTasks.length;
+  const pct = total > 0 ? Math.round(done/total*100) : 0;
+
+  document.getElementById('done-count').textContent = done;
+  document.getElementById('total-count').textContent = total;
+  document.getElementById('pct-count').textContent = pct + '%';
+  document.getElementById('main-progress').style.width = pct + '%';
+
+  for (let i = 0; i <= 4; i++) {
+    const list = document.getElementById('list-' + i);
+    if (!list) continue;
+    const listTotal = list.querySelectorAll('.task').length;
+    const listDone = list.querySelectorAll('.task.done').length;
+    const el = document.getElementById('count-done-' + i);
+    if (el) el.textContent = listDone + '/' + listTotal;
+  }
+}
+
+function saveState() {
+  const tasks = document.querySelectorAll('.task');
+  const state = [];
+  tasks.forEach(t => state.push(t.classList.contains('done')));
+  localStorage.setItem('yt90_tasks', JSON.stringify(state));
+}
+
+function loadState() {
+  try {
+    const state = JSON.parse(localStorage.getItem('yt90_tasks') || '[]');
+    const tasks = document.querySelectorAll('.task');
+    tasks.forEach((t, i) => {
+      if (state[i]) t.classList.add('done');
+    });
+  } catch(e) {}
+}
+
+function selectWeek(n) {
+  currentWeek = n;
+  document.querySelectorAll('.week-btn').forEach((b, i) => {
+    b.classList.toggle('active', i === n-1);
+  });
+  const saved = localStorage.getItem('yt90_notes_w' + n) || '';
+  document.getElementById('notes-area').value = saved;
+}
+
+function saveNotes() {
+  localStorage.setItem('yt90_notes_w' + currentWeek, document.getElementById('notes-area').value);
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.textContent = 'Заметки сохранены ✓';
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 2000);
+}
+
+loadState();
+updateCounts();
+
+// Load week 1 notes
+const saved1 = localStorage.getItem('yt90_notes_w1') || '';
+document.getElementById('notes-area').value = saved1;
+</script>
+</body>
+</html>
